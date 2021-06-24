@@ -7,4 +7,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class BalanceDTO {
     private final int balance;
+    private final String isoCode;
 }

@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "Clients")
+@Table(name = "clients")
 @NoArgsConstructor
 @Getter
 @Setter
@@ -18,7 +18,10 @@ public class Client {
     @GeneratedValue
     private Long Id;
 
-    private int PIN;
+    @Column(name = "FIRSTNAME")
+    private String firstName;
+    @Column(name = "LASTNAME")
+    private String lastName;
 
     @OneToMany(mappedBy = "client_id")
     private Set<Account> accounts;

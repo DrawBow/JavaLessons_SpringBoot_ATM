@@ -6,7 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.sbrf.server.common.messages.Request;
 import ru.sbrf.server.common.messages.Response;
 import ru.sbrf.server.processing.ClientDTO;
+import ru.sbrf.server.processing.entity.Client;
+import ru.sbrf.server.processing.exception.CardNotFoundException;
 import ru.sbrf.server.processing.exception.HostNotFoundException;
+import ru.sbrf.server.processing.service.ATMService;
 import ru.sbrf.server.processing.service.ClientService;
 
 import java.util.List;
@@ -42,16 +45,18 @@ public class HostRestController {
 
     }
 
-    @PostMapping("/hosts/{hostId}/clients/{clientId}")
+    @PostMapping("/hosts/{hostId}/clients/balance")
     public Response getBalance(@PathVariable("hostId") Long hostId,
-                               @PathVariable("clientId") Long clientId,
                                @RequestBody Request request) {
         if (hostId != 1) {
             throw new RuntimeException("Host " + hostId + " is not ready!");
         }
 
         log.info(request.toString());
-        Response response = new Response(clientService.getClient(clientId).getAccountDTO().get(0).getBalance());
+
+        ATMService atmService = new ATMService(clientService);
+
+        Response response = atmService.getCardBalance(request.getCardNum(), request.getPinCode());
         log.info(response.toString());
         return response;
     }
