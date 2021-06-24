@@ -6,7 +6,8 @@ import java.util.List;
 
 @Value
 public class ClientDTO {
-    private final int clientId;
-    private final int PIN;
-    private final List<AccountDTO> accountDTO;
+
+    String firstName;
+    String lastName;
+    List<AccountDTO> accountDTO;
 }

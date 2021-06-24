@@ -3,8 +3,10 @@ package ru.sbrf.server.processing.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.sbrf.server.processing.AccountDTO;
+import ru.sbrf.server.processing.CardDTO;
 import ru.sbrf.server.processing.ClientDTO;
 import ru.sbrf.server.processing.entity.Account;
+import ru.sbrf.server.processing.entity.Card;
 import ru.sbrf.server.processing.entity.Client;
 import ru.sbrf.server.processing.exception.ClientNotFoundException;
 import ru.sbrf.server.processing.repository.ClientCrudRepository;
@@ -27,12 +29,30 @@ public class ClientService {
 
         for (Account account : accountSet) {
 
-            accountDTOSet.add(new AccountDTO(account.getId().intValue(),
-                    account.getBalance()));
+            Set<Card> cardSet = account.getCards();
+            List<CardDTO> cardDTOSet = new ArrayList<>();
+            for (Card card : cardSet) {
+                cardDTOSet.add(new CardDTO(
+                    card.getPinCode(),
+                    card.getCardNum(),
+                    card.getExpireDate(),
+                    card.getCvcCode()
+                ));
+            }
+
+            accountDTOSet.add(new AccountDTO(
+                    account.getId().intValue(),
+                    account.getAccountNum(),
+                    account.getIsoCode(),
+                    account.getBalance(),
+                    cardDTOSet
+                    ));
         }
 
-        return new ClientDTO(client.getId().intValue(),
-                client.getPIN(),
+        return new ClientDTO(
+                //client.getId().intValue(),    // Возможно Id понадобится
+                client.getFirstName(),
+                client.getLastName(),
                 accountDTOSet);
     }
 
@@ -47,10 +67,31 @@ public class ClientService {
 
                     for (Account account : accountSet) {
 
-                        accountDTOSet.add(new AccountDTO(account.getId().intValue(),
-                                account.getBalance()));
+                        Set<Card> cardSet = account.getCards();
+                        List<CardDTO> cardDTOSet = new ArrayList<>();
+                        for (Card card : cardSet) {
+                            cardDTOSet.add(new CardDTO(
+                                    card.getPinCode(),
+                                    card.getCardNum(),
+                                    card.getExpireDate(),
+                                    card.getCvcCode()
+                            ));
+                        }
+
+                        accountDTOSet.add(new AccountDTO(
+                                account.getId().intValue(),
+                                account.getAccountNum(),
+                                account.getIsoCode(),
+                                account.getBalance(),
+                                cardDTOSet
+                        ));
                     }
-                    clients.add(new ClientDTO(client.getId().intValue(), client.getPIN(), accountDTOSet));
+
+                    clients.add(new ClientDTO(
+                            //client.getId().intValue(),    // Возможно Id понадобится
+                            client.getFirstName(),
+                            client.getLastName(),
+                            accountDTOSet));
                 }
         );
         return clients;

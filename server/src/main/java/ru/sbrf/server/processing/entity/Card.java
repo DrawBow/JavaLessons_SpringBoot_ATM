@@ -17,9 +17,13 @@ public class Card {
     @GeneratedValue
     private Long id;
 
+    @Column(name = "PINCODE")
     private int pinCode;
+    @Column(name = "CARDNUM")
     private String cardNum;
+    @Column(name = "EXPIREDATE")
     private Date expireDate;
+    @Column(name = "CVCCODE")
     private int cvcCode;
 
     @ManyToOne

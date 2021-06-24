@@ -18,7 +18,9 @@ public class Client {
     @GeneratedValue
     private Long Id;
 
+    @Column(name = "FIRSTNAME")
     private String firstName;
+    @Column(name = "LASTNAME")
     private String lastName;
 
     @OneToMany(mappedBy = "client_id")

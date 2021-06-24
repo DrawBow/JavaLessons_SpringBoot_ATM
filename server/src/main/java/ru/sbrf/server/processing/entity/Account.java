@@ -18,8 +18,11 @@ public class Account {
     @GeneratedValue
     private Long id;
 
+    @Column(name = "ACCOUNTNUM")
     private String accountNum;
+    @Column(name = "BALANCE")
     private int balance;
+    @Column(name = "ISOCODE")
     private String isoCode;
 
     @ManyToOne

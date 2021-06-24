@@ -1,11 +1,16 @@
 package ru.sbrf.server.processing;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Value;
 
-@RequiredArgsConstructor
-@Getter
+import java.util.List;
+
+// @RequiredArgsConstructor
+// @Getter
+@Value
 public class AccountDTO {
-    private final int accountId;
-    private final int balance;
+    int accountId;
+    String accountNum;
+    String isoCode;
+    int balance;
+    List<CardDTO> cardDTO;
 }
