@@ -27,20 +27,19 @@ public class ATMRestController {
         return "1 ATM is ready.";
     }
 
-    @GetMapping("/ATMs/{ATMId}/clients/{clientId}/accounts/{accountId}/{PIN}")
+    @GetMapping("/ATMs/{ATMId}/clients/balance/{cardNum}/{pinCode}")
     public BalanceDTO getClientBalance(
             @PathVariable("ATMId") Long ATMId,
-            @PathVariable("clientId") Long clientId,
-            @PathVariable("accountId") Long accountId,
-            @PathVariable("PIN") int PIN) {
+            @PathVariable("cardNum") String cardNum,
+            @PathVariable("pinCode") int pinCode) {
 
 
-        log.info("clientId " + clientId + " accountId " + accountId + " PIN " + PIN);
+        log.info("ATMId=" + ATMId+ " cardNum=" + cardNum + " pinCode=" + pinCode);
 
         if (ATMId != 1) {
             throw new ATMInternalErrorException("ATM internal Error");
         }
 
-        return atmService.getClientBalance(clientId, accountId, PIN);
+        return atmService.getClientBalance(cardNum, pinCode);
     }
 }

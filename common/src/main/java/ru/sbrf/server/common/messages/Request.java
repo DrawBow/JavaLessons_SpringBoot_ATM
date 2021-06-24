@@ -6,7 +6,6 @@ import java.util.Date;
 
 @Value
 public class Request {
-    int pinCode;
     String cardNum;
-    int cvcCode;
+    int pinCode;
 }

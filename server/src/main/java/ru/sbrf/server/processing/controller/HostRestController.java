@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.sbrf.server.common.messages.Request;
 import ru.sbrf.server.common.messages.Response;
 import ru.sbrf.server.processing.ClientDTO;
+import ru.sbrf.server.processing.entity.Client;
+import ru.sbrf.server.processing.exception.CardNotFoundException;
 import ru.sbrf.server.processing.exception.HostNotFoundException;
 import ru.sbrf.server.processing.service.ATMService;
 import ru.sbrf.server.processing.service.ClientService;
@@ -33,7 +35,6 @@ public class HostRestController {
         }
     }
 
-//    TODO Пока возвращать весь список клиентов не надо.
     @GetMapping("/hosts/{hostId}/clients")
     public List<ClientDTO> getClientsInfo(@PathVariable Long hostId) {
         if (hostId != 1) {
@@ -53,7 +54,7 @@ public class HostRestController {
 
         log.info(request.toString());
 
-        ATMService atmService = new ATMService(clientService.getAllClients());
+        ATMService atmService = new ATMService(clientService);
 
         Response response = atmService.getCardBalance(request.getCardNum(), request.getPinCode());
         log.info(response.toString());

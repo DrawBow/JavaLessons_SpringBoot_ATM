@@ -1,5 +1,6 @@
 package ru.sbrf.server.processing.service;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import ru.sbrf.server.common.messages.ErrorsCode;
@@ -15,38 +16,49 @@ import java.util.Date;
 import java.util.List;
 
 @Log
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ATMService {
-    private final List<ClientDTO> clients;
+
+    private ClientService clientService;
+
+    public ErrorsCode validate(String cardNo, int pinCode){
+        String cardRegex = "\\d{16}";
+
+        if (! cardNo.matches(cardRegex)){
+            return ErrorsCode.UNCORRECT_CARD_NUMBER;
+        }
+
+        if (pinCode < 1000 | pinCode > 9999){
+            return ErrorsCode.UNCORRECT_PIN_CODE;
+        }
+
+        return ErrorsCode.NOERROR;
+    }
 
     public Response getCardBalance(String cardNo, int pinCode){
         ClientDTO client;
         AccountDTO account;
         CardDTO card;
 
-        if (clients.stream().noneMatch(cli ->
-                cli.getAccountDTO().stream().anyMatch(acc ->
-                        acc.getCardDTO().stream().anyMatch(crd ->
-                                crd.getCardNum().equalsIgnoreCase(cardNo))))) {
-            log.info("getCardBalance request card not found CardNum=" + cardNo);
-            return new Response(ErrorsCode.CARD_NOT_FIND_OR_PIN_UNCORRECT);
+        ErrorsCode errorsCode  = validate(cardNo,pinCode);
+        if (! errorsCode.equals(ErrorsCode.NOERROR)) {
+            return new Response(ErrorsCode.UNCORRECT_CARD_NUMBER);
         }
 
-        client = clients.stream().filter(cli ->
-                cli.getAccountDTO().stream().anyMatch(acc ->
-                        acc.getCardDTO().stream().anyMatch(crd ->
-                                crd.getCardNum().equalsIgnoreCase(cardNo)))).findFirst().orElseThrow(ClientNotFoundException::new);
+        // Метод возвращает нам клиента с единственым аккаунтом и карточкой
+        try {
+          client = clientService.getClientByCardNum(cardNo);
+        } catch (CardNotFoundException e) {
+            log.info("getCardBalance request card not found CardNum=" + cardNo);
+            return new Response(ErrorsCode.CARD_NOT_FOUND_OR_PIN_UNCORRECT);
+        }
 
-        account = client.getAccountDTO().stream().filter(acc ->
-                acc.getCardDTO().stream().anyMatch(crd ->
-                        crd.getCardNum().equalsIgnoreCase(cardNo))).findFirst().orElseThrow(AccountNotFoundException::new);
-
-        card = account.getCardDTO().stream().filter(crd ->
-                        crd.getCardNum().equalsIgnoreCase(cardNo)).findFirst().orElseThrow(CardNotFoundException::new);
+        account = client.getAccountDTO().get(0);
+        card = account.getCardDTO().get(0);
 
         if (card.getPinCode() != pinCode) {
             log.info("getCardBalance request pin uncorrect CardNum=" + cardNo + " pinCode=" + pinCode);
-            return new Response(ErrorsCode.CARD_NOT_FIND_OR_PIN_UNCORRECT);
+            return new Response(ErrorsCode.CARD_NOT_FOUND_OR_PIN_UNCORRECT);
         }
 
         if (card.getExpireDate().before(new Date())) {

@@ -12,7 +12,7 @@ public class Response {
     private ErrorsCode errorsCode;
     private String account;
     private String isoCode;
-    private int balance; // TODO  convert to BigDecimal
+    private int balance; // convert to BigDecimal?
 
     public Response(final ErrorsCode errorsCode) {
         this.errorsCode = errorsCode;
